@@ -1,5 +1,11 @@
 <audio #audioPlayer *ngIf="audioSrc" [src]="audioSrc"></audio>
 <div class="audio-player-controls" *ngIf="isReadyForPlayback">
-	<button *ngIf="!isPlaying" class="play" (click)="play()">Play</button>
-	<button *ngIf="isPlaying" class="pause" (click)="pause()">Pause</button>
+	<div class="audio-player-controls__play-pause">
+		<button *ngIf="!isPlaying" class="play" (click)="play()">Play</button>
+		<button *ngIf="isPlaying" class="pause" (click)="pause()">Pause</button>
+	</div>
+	<div class="audio-player-controls__timeline">
+		<div class="audio-player-controls__timeline__display"></div>
+		<div class="audio-player-controls__timeline__playhead"></div>
+	</div>
 </div>
