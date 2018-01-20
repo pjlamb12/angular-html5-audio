@@ -9,6 +9,7 @@ export class AudioPlayerComponent implements OnInit, AfterViewInit {
 	@Input() audioSrc: string;
 	@ViewChild('audioPlayer') audioPlayer: ElementRef;
 	public trackLength: number = 0;
+	public isPlaying: boolean = false;
 	constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
 	ngOnInit() {}
@@ -20,5 +21,17 @@ export class AudioPlayerComponent implements OnInit, AfterViewInit {
 	setTrackLength() {
 		this.trackLength = Math.ceil(this.audioPlayer.nativeElement.duration);
 		this.changeDetectorRef.detectChanges();
+	}
+
+	play() {
+		if (!this.isPlaying) {
+			this.audioPlayer.nativeElement.play();
+		}
+	}
+
+	pause() {
+		if (this.isPlaying) {
+			this.audioPlayer.nativeElement.pause();
+		}
 	}
 }
