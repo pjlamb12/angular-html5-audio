@@ -10,12 +10,19 @@ export class AudioPlayerComponent implements OnInit, AfterViewInit {
 	@ViewChild('audioPlayer') audioPlayer: ElementRef;
 	public trackLength: number = 0;
 	public isPlaying: boolean = false;
+	public isReadyForPlayback = false;
+
 	constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
 	ngOnInit() {}
 
 	ngAfterViewInit() {
-		this.audioPlayer.nativeElement.addEventListener('canplaythrough', this.setTrackLength.bind(this));
+		this.audioPlayer.nativeElement.addEventListener('canplaythrough', this.canPlayThrough.bind(this));
+	}
+
+	canPlayThrough() {
+		this.isReadyForPlayback = true;
+		this.setTrackLength();
 	}
 
 	setTrackLength() {
@@ -26,12 +33,14 @@ export class AudioPlayerComponent implements OnInit, AfterViewInit {
 	play() {
 		if (!this.isPlaying) {
 			this.audioPlayer.nativeElement.play();
+			this.isPlaying = true;
 		}
 	}
 
 	pause() {
 		if (this.isPlaying) {
 			this.audioPlayer.nativeElement.pause();
+			this.isPlaying = false;
 		}
 	}
 }
