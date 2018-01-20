@@ -3,9 +3,8 @@ import { CommonModule } from '@angular/common';
 import { AudioPlayerComponent } from './audio-player/audio-player.component';
 
 @NgModule({
-  imports: [
-    CommonModule
-  ],
-  declarations: [AudioPlayerComponent]
+	imports: [CommonModule],
+	declarations: [AudioPlayerComponent],
+	exports: [AudioPlayerComponent],
 })
-export class AudioPlayerModule { }
+export class AudioPlayerModule {}

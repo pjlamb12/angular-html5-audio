@@ -1,3 +1,5 @@
-<p>
-  audio-player works!
-</p>
+<audio #audioPlayer *ngIf="audioSrc" [src]="audioSrc"></audio>
+<div class="audio-player-controls" *ngIf="isReadyForPlayback">
+	<button *ngIf="!isPlaying" class="play" (click)="play()">Play</button>
+	<button *ngIf="isPlaying" class="pause" (click)="pause()">Pause</button>
+</div>
