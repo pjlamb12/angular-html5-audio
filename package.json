@@ -7,12 +7,20 @@
 		"name": "Preston Lamb",
 		"url": "http://www.prestonlamb.com"
 	},
-	"maintainers": ["Preston Lamb"],
+	"maintainers": [
+		"Preston Lamb"
+	],
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/pjlamb12/angular-html5-audio"
 	},
-	"keywords": ["angular", "html5 audio", "audio player", "audio", "player"],
+	"keywords": [
+		"angular",
+		"html5 audio",
+		"audio player",
+		"audio",
+		"player"
+	],
 	"scripts": {
 		"ng": "ng",
 		"start": "ng serve",

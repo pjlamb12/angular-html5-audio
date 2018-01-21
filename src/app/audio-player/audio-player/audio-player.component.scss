@@ -3,6 +3,11 @@
 	justify-content: space-around;
 	align-items: center;
 }
+.audio-player-controls__play-pause {
+	button {
+		border: none;
+	}
+}
 .audio-player-controls__timeline {
 	box-sizing: border-box;
 	width: 100%;
