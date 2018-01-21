@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { AudioPlayerConfig } from '../audio-player-config';
 
 @Component({
 	selector: 'audio-player',
@@ -7,6 +8,7 @@ import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit, ChangeD
 })
 export class AudioPlayerComponent implements OnInit, AfterViewInit {
 	@Input() audioSrc: string;
+	@Input() config: AudioPlayerConfig;
 	@ViewChild('audioPlayer') audioPlayer: ElementRef;
 	@ViewChild('playhead') playhead: ElementRef;
 	public trackLength: number = 0;
