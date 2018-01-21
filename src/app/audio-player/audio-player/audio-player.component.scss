@@ -3,6 +3,16 @@
 	justify-content: space-around;
 	align-items: center;
 }
+.audio-player-controls__play-pause {
+	button {
+		border: none;
+	}
+	i {
+		font-size: 18px;
+		color: #333333;
+		cursor: pointer;
+	}
+}
 .audio-player-controls__timeline {
 	box-sizing: border-box;
 	width: 100%;
