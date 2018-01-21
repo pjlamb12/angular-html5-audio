@@ -1,6 +1,12 @@
 export interface AudioPlayerConfig {
-	timelineConfig?: { timelineColor: string; timelineHeight: number; playheadHeight: number; playheadColor: string };
-	playPauseConfig?: {
+	timelineConfig: {
+		timelineColor: string;
+		timelineHeight: number;
+		playheadHeight: number;
+		playheadColor: string;
+		opacity: string;
+	};
+	playPauseConfig: {
 		iconClassPrefix: string;
 		playIconClass: string;
 		pauseIconClass: string;

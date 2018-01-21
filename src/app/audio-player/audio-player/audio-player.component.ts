@@ -8,7 +8,7 @@ import { AudioPlayerConfig } from '../audio-player-config';
 })
 export class AudioPlayerComponent implements OnInit, AfterViewInit {
 	@Input() audioSrc: string;
-	@Input() config: AudioPlayerConfig = {};
+	@Input() config: AudioPlayerConfig;
 	@ViewChild('audioPlayer') audioPlayer: ElementRef;
 	@ViewChild('playhead') playhead: ElementRef;
 	public trackLength: number = 0;
@@ -20,13 +20,22 @@ export class AudioPlayerComponent implements OnInit, AfterViewInit {
 	constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
 	ngOnInit() {
-		this.config.playPauseConfig = {
-			iconClassPrefix: 'fa',
-			iconPixelSize: 18,
-			pauseIconClass: 'fa-pause',
-			pauseIconColor: '#333333',
-			playIconClass: 'fa-play',
-			playIconColor: '#333333',
+		this.config = {
+			timelineConfig: {
+				timelineColor: '#333333',
+				timelineHeight: 4,
+				playheadHeight: 12,
+				playheadColor: 'lightblue',
+				opacity: '0.6',
+			},
+			playPauseConfig: {
+				iconClassPrefix: 'fa',
+				iconPixelSize: 18,
+				pauseIconClass: 'fa-pause',
+				pauseIconColor: '#333333',
+				playIconClass: 'fa-play',
+				playIconColor: '#333333',
+			},
 		};
 	}
 
