@@ -1,11 +1,12 @@
+{{ config | json }}
 <audio #audioPlayer *ngIf="audioSrc" [src]="audioSrc"></audio>
 <div class="audio-player-controls" *ngIf="isReadyForPlayback">
 	<div class="audio-player-controls__play-pause">
 		<button *ngIf="!isPlaying" class="play" (click)="play()">
-			<i class="fa fa-play"></i>
+			<i [style.font-size.px]="config.playPauseConfig.iconPixelSize" [style.color]="config.playPauseConfig.playIconColor" class="{{ config.playPauseConfig.iconClassPrefix }} {{ config.playPauseConfig.playIconClass }}"></i>
 		</button>
 		<button *ngIf="isPlaying" class="pause" (click)="pause()">
-			<i class="fa fa-pause" aria-hidden="true"></i>
+			<i [style.font-size.px]="config.playPauseConfig.iconPixelSize" [style.color]="config.playPauseConfig.pauseIconColor" class="{{ config.playPauseConfig.iconClassPrefix }} {{ config.playPauseConfig.pauseIconClass }}"></i>
 		</button>
 	</div>
 	<div class="audio-player-controls__timeline">

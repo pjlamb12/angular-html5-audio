@@ -8,7 +8,7 @@ import { AudioPlayerConfig } from '../audio-player-config';
 })
 export class AudioPlayerComponent implements OnInit, AfterViewInit {
 	@Input() audioSrc: string;
-	@Input() config: AudioPlayerConfig;
+	@Input() config: AudioPlayerConfig = {};
 	@ViewChild('audioPlayer') audioPlayer: ElementRef;
 	@ViewChild('playhead') playhead: ElementRef;
 	public trackLength: number = 0;
@@ -19,7 +19,16 @@ export class AudioPlayerComponent implements OnInit, AfterViewInit {
 
 	constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
-	ngOnInit() {}
+	ngOnInit() {
+		this.config.playPauseConfig = {
+			iconClassPrefix: 'fa',
+			iconPixelSize: 18,
+			pauseIconClass: 'fa-pause',
+			pauseIconColor: '#333333',
+			playIconClass: 'fa-play',
+			playIconColor: '#333333',
+		};
+	}
 
 	ngAfterViewInit() {
 		this.audioPlayer.nativeElement.addEventListener('canplaythrough', this.canPlayThrough.bind(this));
