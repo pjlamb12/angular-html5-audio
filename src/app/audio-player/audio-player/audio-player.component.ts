@@ -8,9 +8,12 @@ import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit, ChangeD
 export class AudioPlayerComponent implements OnInit, AfterViewInit {
 	@Input() audioSrc: string;
 	@ViewChild('audioPlayer') audioPlayer: ElementRef;
+	@ViewChild('playhead') playhead: ElementRef;
 	public trackLength: number = 0;
 	public isPlaying: boolean = false;
 	public isReadyForPlayback = false;
+	public currentTimeDisplay: number = 0;
+	public playheadPosition: number = 0;
 
 	constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
@@ -18,7 +21,37 @@ export class AudioPlayerComponent implements OnInit, AfterViewInit {
 
 	ngAfterViewInit() {
 		this.audioPlayer.nativeElement.addEventListener('canplaythrough', this.canPlayThrough.bind(this));
+		this.audioPlayer.nativeElement.addEventListener('timeupdate', this.onTimeUpdate.bind(this));
 	}
+
+	onTimeUpdate() {
+		const currentTime = this.audioPlayer.nativeElement.currentTime;
+		const playPercentAsDecimal = currentTime / this.trackLength;
+		const currentTimeCeil = Math.ceil(currentTime);
+		this.setCurrentTimeDisplay(currentTimeCeil);
+		if (playPercentAsDecimal >= 1) {
+			this.reset();
+		} else {
+			this.setPlayheadPosition(playPercentAsDecimal);
+		}
+		this.changeDetectorRef.detectChanges();
+	}
+
+	reset() {
+		this.isPlaying = false;
+		this.setPlayheadPosition(0);
+		this.setCurrentTimeDisplay(0);
+	}
+
+	setPlayheadPosition(percent: number) {
+		this.playheadPosition = 100 * percent;
+	}
+
+	setCurrentTimeDisplay(time: number) {
+		this.currentTimeDisplay = time;
+	}
+
+	movePlayhead() {}
 
 	canPlayThrough() {
 		this.isReadyForPlayback = true;

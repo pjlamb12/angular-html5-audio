@@ -6,6 +6,7 @@
 	</div>
 	<div class="audio-player-controls__timeline">
 		<div class="audio-player-controls__timeline__display"></div>
-		<div class="audio-player-controls__timeline__playhead"></div>
+		<div #playhead class="audio-player-controls__timeline__playhead" [ngClass]="{'audio-player-controls__timeline__playhead--start': !isPlaying && currentTimeDisplay === 0}"
+		 [style.marginLeft.%]="playheadPosition"></div>
 	</div>
 </div>

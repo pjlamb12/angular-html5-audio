@@ -31,4 +31,8 @@
 	border-radius: 50%;
 	background-color: lightblue;
 	margin-left: -6px;
+
+	&.audio-player-controls__timeline__playhead--start {
+		margin-left: -6px !important;
+	}
 }
