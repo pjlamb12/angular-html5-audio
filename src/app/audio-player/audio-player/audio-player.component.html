@@ -8,12 +8,22 @@
 			<i [style.font-size.px]="config.playPauseConfig.iconPixelSize" [style.color]="config.playPauseConfig.pauseIconColor" class="{{ config.playPauseConfig.iconClassPrefix }} {{ config.playPauseConfig.pauseIconClass }}"></i>
 		</button>
 	</div>
-	<div class="audio-player-controls__timeline">
+	<div #timeline class="audio-player-controls__timeline">
 		<div [style.background-color]="config.timelineConfig.timelineColor" [style.height.px]="config.timelineConfig.timelineHeight"
 		 [style.border-radius.px]="config.timelineConfig.timelineHeight" [style.opacity]="config.timelineConfig.opacity" class="audio-player-controls__timeline__display"></div>
 		<div [style.background-color]="config.timelineConfig.playheadColor" [style.height.px]="config.timelineConfig.playheadHeight"
-		 [style.width.px]="config.timelineConfig.playheadHeight" [style.marginLeft.%]="playheadPosition" #playhead class="audio-player-controls__timeline__playhead"
+		 [style.width.px]="config.timelineConfig.playheadHeight" [style.marginLeft.%]="$playheadPosition | async" #playhead class="audio-player-controls__timeline__playhead"
 		 [ngClass]="{'audio-player-controls__timeline__playhead--start': !isPlaying && currentTimeDisplay === 0}">
 		</div>
 	</div>
 </div>
+
+<p>
+	Track Length Observable: {{ $trackLength | async }}
+</p>
+<p>
+	Current Time Display Observable: {{ $currentTimeDisplay | async }}
+</p>
+<p>
+	Current Playhead Position Observable: {{ $playheadPosition | async }}
+</p>
