@@ -2,8 +2,6 @@ import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit } from '
 import { AudioPlayerConfig } from '../audio-player-config';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/fromEvent';
-import 'rxjs/add/observable/from';
-import 'rxjs/add/operator/startWith';
 import 'rxjs/add/operator/map';
 
 @Component({
@@ -18,13 +16,10 @@ export class AudioPlayerComponent implements OnInit, AfterViewInit {
 	@ViewChild('playhead') playhead: ElementRef;
 	@ViewChild('timeline') timeline: ElementRef;
 	public $trackLength: Observable<number>;
-	public trackLength: number;
 	public isPlaying: boolean = false;
 	public isReadyForPlayback = false;
 	public $currentTimeDisplay: Observable<number>;
-	public currentTimeDisplay: number = 0;
 	public $playheadPosition: Observable<number>;
-	public playheadPosition: number = 0;
 
 	constructor() {}
 
@@ -49,66 +44,68 @@ export class AudioPlayerComponent implements OnInit, AfterViewInit {
 	}
 
 	ngAfterViewInit() {
-		this.$trackLength = Observable.fromEvent(this.audioPlayer.nativeElement, 'canplaythrough')
-			.map(() => Math.ceil(this.audioPlayer.nativeElement.duration))
-			.startWith(0);
-		this.$trackLength = Observable.fromEvent(this.audioPlayer.nativeElement, 'canplaythrough')
-			.map(() => {
-				this.isReadyForPlayback = true;
-				return Math.ceil(this.audioPlayer.nativeElement.duration);
-			})
-			.startWith(0);
-		this.$currentTimeDisplay = Observable.fromEvent(this.audioPlayer.nativeElement, 'timeupdate')
-			.map(() => {
-				const current = this.audioPlayer.nativeElement.currentTime;
-				const duration = this.audioPlayer.nativeElement.duration;
-				if (current === duration) {
-					return 0;
-				}
-				return Math.ceil(current);
-			})
-			.startWith(0);
-		this.$playheadPosition = Observable.fromEvent(this.audioPlayer.nativeElement, 'timeupdate')
-			.map(() => {
-				const percentAsDecimal =
-					this.audioPlayer.nativeElement.currentTime / this.audioPlayer.nativeElement.duration;
-				if (percentAsDecimal >= 1) {
-					this.isPlaying = false;
-					return 0;
-				}
-				return 100 * percentAsDecimal;
-			})
-			.startWith(0);
+		this.$trackLength = Observable.fromEvent(this.audioPlayer.nativeElement, 'canplaythrough').map(() =>
+			this.setTrackLengthOnLoad(),
+		);
+		this.$currentTimeDisplay = Observable.fromEvent(this.audioPlayer.nativeElement, 'timeupdate').map(() =>
+			this.updateCurrentTimeDisplay(),
+		);
+		this.$playheadPosition = Observable.fromEvent(this.audioPlayer.nativeElement, 'timeupdate').map(() =>
+			this.updatePlayheadPosition(),
+		);
+	}
+
+	setTrackLengthOnLoad(): number {
+		this.isReadyForPlayback = true;
+		return Math.ceil(this.audioPlayer.nativeElement.duration);
+	}
+
+	updateCurrentTimeDisplay(): number {
+		const current = this.audioPlayer.nativeElement.currentTime;
+		const duration = this.audioPlayer.nativeElement.duration;
+		if (current === duration) {
+			return 0;
+		}
+		return Math.ceil(current);
+	}
+
+	updatePlayheadPosition(): number {
+		const percentAsDecimal = this.audioPlayer.nativeElement.currentTime / this.audioPlayer.nativeElement.duration;
+		if (percentAsDecimal >= 1) {
+			this.isPlaying = false;
+			return 0;
+		}
+		return 100 * percentAsDecimal;
 	}
 
 	clickOnPlayhead(ev: any) {
 		this.manuallyMovePlayhead(ev);
 	}
 
-	manuallyMovePlayhead(ev: any) {
-		let newPercent = this.getPercentPosition(ev);
-		newPercent = newPercent < 0 ? 0 : newPercent;
-		newPercent = newPercent > 1 ? 1 : newPercent;
-		if (newPercent !== 1) {
-			const newCurrentTime: number = this.trackLength * newPercent;
-			this.audioPlayer.nativeElement.currentTime = newCurrentTime;
-			this.playheadPosition = 100 * newPercent;
-			this.setPlayerCurrentTimeDisplay(Math.ceil(newCurrentTime));
-			// this.changeDetectorRef.detectChanges();
-		}
-	}
+	// // manuallyMovePlayhead(ev: any) {
+	// // 	let newPercent = this.getPercentPosition(ev);
+	// // 	newPercent = newPercent < 0 ? 0 : newPercent;
+	// // 	newPercent = newPercent > 1 ? 1 : newPercent;
+	// // 	if (newPercent !== 1) {
+	// // 		const newCurrentTime: number = this.trackLength * newPercent;
+	// // 		this.audioPlayer.nativeElement.currentTime = newCurrentTime;
+	// // 		this.playheadPosition = 100 * newPercent;
+	// // 		this.setPlayerCurrentTimeDisplay(Math.ceil(newCurrentTime));
+	// // 		// this.changeDetectorRef.detectChanges();
+	// // 	}
+	// // }
 
-	setPlayerCurrentTimeDisplay(time: number) {
-		this.currentTimeDisplay = time;
-	}
+	// // setPlayerCurrentTimeDisplay(time: number) {
+	// // 	this.currentTimeDisplay = time;
+	// // }
 
-	getPercentPosition(ev: any) {
-		const clientX: number = ev.clientX;
-		const boundingClientRectLeft: number = this.timeline.nativeElement.getBoundingClientRect().left;
-		const timelineWidth: number = this.timeline.nativeElement.offsetWidth;
-		const newPercent = (clientX - boundingClientRectLeft) / timelineWidth;
-		return newPercent;
-	}
+	// getPercentPosition(ev: any) {
+	// 	const clientX: number = ev.clientX;
+	// 	const boundingClientRectLeft: number = this.timeline.nativeElement.getBoundingClientRect().left;
+	// 	const timelineWidth: number = this.timeline.nativeElement.offsetWidth;
+	// 	const newPercent = (clientX - boundingClientRectLeft) / timelineWidth;
+	// 	return newPercent;
+	// }
 
 	play() {
 		if (!this.isPlaying) {
