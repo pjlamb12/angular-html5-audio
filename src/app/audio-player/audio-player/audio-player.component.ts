@@ -3,13 +3,14 @@ import { AudioPlayerConfig } from '../audio-player-config';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/fromEvent';
 import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/startWith';
 
 @Component({
 	selector: 'audio-player',
 	templateUrl: './audio-player.component.html',
 	styleUrls: ['./audio-player.component.scss'],
 })
-export class AudioPlayerComponent implements OnInit, AfterViewInit {
+export class AudioPlayerComponent implements OnInit {
 	@Input() audioSrc: string;
 	@Input() config: AudioPlayerConfig;
 	@ViewChild('audioPlayer') audioPlayer: ElementRef;
@@ -41,19 +42,18 @@ export class AudioPlayerComponent implements OnInit, AfterViewInit {
 				playIconColor: '#333333',
 			},
 		};
+		this.$trackLength = Observable.fromEvent(this.audioPlayer.nativeElement, 'canplaythrough')
+			.map(() => this.setTrackLengthOnLoad())
+			.startWith(0);
+		this.$currentTimeDisplay = Observable.fromEvent(this.audioPlayer.nativeElement, 'timeupdate')
+			.map(() => this.updateCurrentTimeDisplay())
+			.startWith(0);
+		this.$playheadPosition = Observable.fromEvent(this.audioPlayer.nativeElement, 'timeupdate')
+			.map(() => this.updatePlayheadPosition())
+			.startWith(0);
 	}
 
-	ngAfterViewInit() {
-		this.$trackLength = Observable.fromEvent(this.audioPlayer.nativeElement, 'canplaythrough').map(() =>
-			this.setTrackLengthOnLoad(),
-		);
-		this.$currentTimeDisplay = Observable.fromEvent(this.audioPlayer.nativeElement, 'timeupdate').map(() =>
-			this.updateCurrentTimeDisplay(),
-		);
-		this.$playheadPosition = Observable.fromEvent(this.audioPlayer.nativeElement, 'timeupdate').map(() =>
-			this.updatePlayheadPosition(),
-		);
-	}
+	ngAfterViewInit() {}
 
 	setTrackLengthOnLoad(): number {
 		this.isReadyForPlayback = true;
@@ -79,33 +79,33 @@ export class AudioPlayerComponent implements OnInit, AfterViewInit {
 	}
 
 	clickOnPlayhead(ev: any) {
-		this.manuallyMovePlayhead(ev);
+		// this.manuallyMovePlayhead(ev);
 	}
 
-	// // manuallyMovePlayhead(ev: any) {
-	// // 	let newPercent = this.getPercentPosition(ev);
-	// // 	newPercent = newPercent < 0 ? 0 : newPercent;
-	// // 	newPercent = newPercent > 1 ? 1 : newPercent;
-	// // 	if (newPercent !== 1) {
-	// // 		const newCurrentTime: number = this.trackLength * newPercent;
-	// // 		this.audioPlayer.nativeElement.currentTime = newCurrentTime;
-	// // 		this.playheadPosition = 100 * newPercent;
-	// // 		this.setPlayerCurrentTimeDisplay(Math.ceil(newCurrentTime));
-	// // 		// this.changeDetectorRef.detectChanges();
-	// // 	}
-	// // }
-
-	// // setPlayerCurrentTimeDisplay(time: number) {
-	// // 	this.currentTimeDisplay = time;
-	// // }
-
-	// getPercentPosition(ev: any) {
-	// 	const clientX: number = ev.clientX;
-	// 	const boundingClientRectLeft: number = this.timeline.nativeElement.getBoundingClientRect().left;
-	// 	const timelineWidth: number = this.timeline.nativeElement.offsetWidth;
-	// 	const newPercent = (clientX - boundingClientRectLeft) / timelineWidth;
-	// 	return newPercent;
+	// manuallyMovePlayhead(ev: any) {
+	// 	let newPercent = this.getPercentPosition(ev);
+	// 	newPercent = newPercent < 0 ? 0 : newPercent;
+	// 	newPercent = newPercent > 1 ? 1 : newPercent;
+	// 	if (newPercent !== 1) {
+	// 		const newCurrentTime: number = this.trackLength * newPercent;
+	// 		this.audioPlayer.nativeElement.currentTime = newCurrentTime;
+	// 		this.playheadPosition = 100 * newPercent;
+	// 		this.setPlayerCurrentTimeDisplay(Math.ceil(newCurrentTime));
+	// 		// this.changeDetectorRef.detectChanges();
+	// 	}
 	// }
+
+	// setPlayerCurrentTimeDisplay(time: number) {
+	// 	this.currentTimeDisplay = time;
+	// }
+
+	getPercentPosition(ev: any) {
+		const clientX: number = ev.clientX;
+		const boundingClientRectLeft: number = this.timeline.nativeElement.getBoundingClientRect().left;
+		const timelineWidth: number = this.timeline.nativeElement.offsetWidth;
+		const newPercent = (clientX - boundingClientRectLeft) / timelineWidth;
+		return newPercent;
+	}
 
 	play() {
 		if (!this.isPlaying) {
