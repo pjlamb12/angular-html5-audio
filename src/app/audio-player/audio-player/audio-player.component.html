@@ -1,4 +1,4 @@
-<audio #audioPlayer *ngIf="audioSrc" [src]="audioSrc"></audio>
+<audio #audioPlayer [hidden]="!audioSrc" [src]="audioSrc"></audio>
 <div class="audio-player-controls">
 	<div class="audio-player-controls__play-pause">
 		<button [disabled]="!isReadyForPlayback" *ngIf="!isPlaying" class="play" (click)="play()">
