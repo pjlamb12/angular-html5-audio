@@ -2,6 +2,8 @@ import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit } from '
 import { AudioPlayerConfig } from '../audio-player-config';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/fromEvent';
+import 'rxjs/add/observable/merge';
+import 'rxjs/add/operator/delay';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/startWith';
 
@@ -16,15 +18,62 @@ export class AudioPlayerComponent implements OnInit {
 	@ViewChild('audioPlayer') audioPlayer: ElementRef;
 	@ViewChild('playhead') playhead: ElementRef;
 	@ViewChild('timeline') timeline: ElementRef;
-	public $trackLength: Observable<number>;
+	public trackLength$: Observable<number>;
 	public isPlaying: boolean = false;
+	public wasPlaying: boolean = false;
 	public isReadyForPlayback = false;
-	public $currentTimeDisplay: Observable<number>;
-	public $playheadPosition: Observable<number>;
+	public currentTimeDisplay$: Observable<number>;
+	public playheadPosition$: Observable<number>;
+	private eventCounter: number = 0;
+	private mousedownIsOnPlayhead: boolean = false;
 
 	constructor() {}
 
 	ngOnInit() {
+		this.setOnLoadConfig();
+		this.trackLength$ = Observable.fromEvent(this.audioPlayer.nativeElement, 'canplaythrough')
+			.map(() => this.setTrackLengthOnLoad())
+			.delay(0);
+		// .startWith(0);
+		this.currentTimeDisplay$ = Observable.fromEvent(this.audioPlayer.nativeElement, 'timeupdate')
+			.map(() => this.updateCurrentTimeDisplay())
+			.delay(0);
+		// .startWith(0);
+		const playheadPositionTimeupdate$ = Observable.fromEvent(this.audioPlayer.nativeElement, 'timeupdate')
+			.map(() => this.updatePlayheadPosition())
+			.delay(0);
+		// .startWith(0);
+		const playheadMousemove$ = Observable.fromEvent(document, 'mousemove')
+			.map((mmEv: MouseEvent) => {
+				if (this.mousedownIsOnPlayhead) {
+					const newPosition = this.manuallyMovePlayhead(mmEv);
+					return newPosition;
+				}
+				return 100 * (this.audioPlayer.nativeElement.currentTime / this.audioPlayer.nativeElement.duration);
+			})
+			.delay(0);
+		// .startWith(0);
+		this.playheadPosition$ = Observable.merge(playheadPositionTimeupdate$, playheadMousemove$);
+		this.playhead.nativeElement.addEventListener('mousedown', this.onPlayheadMousedownEvent.bind(this));
+		this.playhead.nativeElement.addEventListener('mouseup', this.onPlayheadMouseupEvent.bind(this));
+		document.addEventListener('mouseup', this.onPlayheadMouseupEvent.bind(this));
+	}
+
+	onPlayheadMousedownEvent() {
+		this.mousedownIsOnPlayhead = true;
+		this.wasPlaying = !!this.isPlaying;
+		this.pause();
+	}
+
+	onPlayheadMouseupEvent() {
+		this.mousedownIsOnPlayhead = false;
+		if (this.wasPlaying) {
+			this.play();
+		}
+		this.wasPlaying = false;
+	}
+
+	setOnLoadConfig() {
 		this.config = {
 			timelineConfig: {
 				timelineColor: '#333333',
@@ -42,18 +91,7 @@ export class AudioPlayerComponent implements OnInit {
 				playIconColor: '#333333',
 			},
 		};
-		this.$trackLength = Observable.fromEvent(this.audioPlayer.nativeElement, 'canplaythrough')
-			.map(() => this.setTrackLengthOnLoad())
-			.startWith(0);
-		this.$currentTimeDisplay = Observable.fromEvent(this.audioPlayer.nativeElement, 'timeupdate')
-			.map(() => this.updateCurrentTimeDisplay())
-			.startWith(0);
-		this.$playheadPosition = Observable.fromEvent(this.audioPlayer.nativeElement, 'timeupdate')
-			.map(() => this.updatePlayheadPosition())
-			.startWith(0);
 	}
-
-	ngAfterViewInit() {}
 
 	setTrackLengthOnLoad(): number {
 		this.isReadyForPlayback = true;
@@ -82,22 +120,19 @@ export class AudioPlayerComponent implements OnInit {
 		// this.manuallyMovePlayhead(ev);
 	}
 
-	// manuallyMovePlayhead(ev: any) {
-	// 	let newPercent = this.getPercentPosition(ev);
-	// 	newPercent = newPercent < 0 ? 0 : newPercent;
-	// 	newPercent = newPercent > 1 ? 1 : newPercent;
-	// 	if (newPercent !== 1) {
-	// 		const newCurrentTime: number = this.trackLength * newPercent;
-	// 		this.audioPlayer.nativeElement.currentTime = newCurrentTime;
-	// 		this.playheadPosition = 100 * newPercent;
-	// 		this.setPlayerCurrentTimeDisplay(Math.ceil(newCurrentTime));
-	// 		// this.changeDetectorRef.detectChanges();
-	// 	}
-	// }
-
-	// setPlayerCurrentTimeDisplay(time: number) {
-	// 	this.currentTimeDisplay = time;
-	// }
+	manuallyMovePlayhead(ev: any) {
+		let newPercent = this.getPercentPosition(ev);
+		newPercent = newPercent < 0 ? 0 : newPercent;
+		newPercent = newPercent > 1 ? 1 : newPercent;
+		if (newPercent < 1) {
+			const newCurrentTime: number = this.audioPlayer.nativeElement.duration * newPercent;
+			this.audioPlayer.nativeElement.currentTime = newCurrentTime;
+			return 100 * newPercent;
+		} else if (newPercent === 1) {
+			return 100;
+		}
+		return 0;
+	}
 
 	getPercentPosition(ev: any) {
 		const clientX: number = ev.clientX;
