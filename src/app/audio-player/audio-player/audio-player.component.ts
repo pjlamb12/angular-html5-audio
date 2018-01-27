@@ -39,6 +39,9 @@ export class AudioPlayerComponent implements OnInit {
 			.map(() => this.updateCurrentTimeDisplay())
 			.delay(0);
 		// .startWith(0);
+		const playheadPositionTimelineClick$ = Observable.fromEvent(this.timeline.nativeElement, 'click')
+			.map(ev => this.manuallyMovePlayhead(ev))
+			.delay(0);
 		const playheadPositionTimeupdate$ = Observable.fromEvent(this.audioPlayer.nativeElement, 'timeupdate')
 			.map(() => this.updatePlayheadPosition())
 			.delay(0);
@@ -53,10 +56,19 @@ export class AudioPlayerComponent implements OnInit {
 			})
 			.delay(0);
 		// .startWith(0);
-		this.playheadPosition$ = Observable.merge(playheadPositionTimeupdate$, playheadMousemove$);
+		this.playheadPosition$ = Observable.merge(
+			playheadPositionTimeupdate$,
+			playheadMousemove$,
+			playheadPositionTimelineClick$,
+		);
 		this.playhead.nativeElement.addEventListener('mousedown', this.onPlayheadMousedownEvent.bind(this));
-		this.playhead.nativeElement.addEventListener('mouseup', this.onPlayheadMouseupEvent.bind(this));
 		document.addEventListener('mouseup', this.onPlayheadMouseupEvent.bind(this));
+	}
+
+	ngOnChanges() {
+		if (this.audioSrc) {
+			this.reset();
+		}
 	}
 
 	onPlayheadMousedownEvent() {
@@ -116,10 +128,6 @@ export class AudioPlayerComponent implements OnInit {
 		return 100 * percentAsDecimal;
 	}
 
-	clickOnPlayhead(ev: any) {
-		// this.manuallyMovePlayhead(ev);
-	}
-
 	manuallyMovePlayhead(ev: any) {
 		let newPercent = this.getPercentPosition(ev);
 		newPercent = newPercent < 0 ? 0 : newPercent;
@@ -154,5 +162,10 @@ export class AudioPlayerComponent implements OnInit {
 			this.audioPlayer.nativeElement.pause();
 			this.isPlaying = false;
 		}
+	}
+
+	reset() {
+		this.isPlaying = false;
+		this.wasPlaying = false;
 	}
 }
