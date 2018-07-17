@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { AudioPlayerConfig } from '../audio-player-config';
-import { Observable } from 'rxjs/Observable';
+// import { AudioPlayerConfig } from '../audio-player-config';
+import { Observable } from 'rxjs';
 import 'rxjs/add/observable/fromEvent';
 import 'rxjs/add/observable/merge';
 import 'rxjs/add/operator/delay';
@@ -14,7 +14,7 @@ import 'rxjs/add/operator/startWith';
 })
 export class AudioPlayerComponent implements OnInit {
 	@Input() audioSrc: string;
-	@Input() config: AudioPlayerConfig;
+	@Input() config: any;
 	@ViewChild('audioPlayer') audioPlayer: ElementRef;
 	@ViewChild('playhead') playhead: ElementRef;
 	@ViewChild('timeline') timeline: ElementRef;

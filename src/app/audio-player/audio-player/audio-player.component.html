@@ -1,24 +1,3 @@
-<audio #audioPlayer [hidden]="!audioSrc" [src]="audioSrc"></audio>
-<div class="audio-player-controls">
-	<div class="audio-player-controls__play-pause">
-		<button [disabled]="!isReadyForPlayback" *ngIf="!isPlaying" class="play" (click)="play()">
-			<i [style.font-size.px]="config.playPauseConfig.iconPixelSize" [style.color]="config.playPauseConfig.playIconColor" class="{{ config.playPauseConfig.iconClassPrefix }} {{ config.playPauseConfig.playIconClass }}"></i>
-		</button>
-		<button [disabled]="!isReadyForPlayback" *ngIf="isPlaying" class="pause" (click)="pause()">
-			<i [style.font-size.px]="config.playPauseConfig.iconPixelSize" [style.color]="config.playPauseConfig.pauseIconColor" class="{{ config.playPauseConfig.iconClassPrefix }} {{ config.playPauseConfig.pauseIconClass }}"></i>
-		</button>
-	</div>
-	<div #timeline class="audio-player-controls__timeline">
-		<div class="audio-player-controls__timeline__container">
-			<div [style.background-color]="config.timelineConfig.timelineColor" [style.height.px]="config.timelineConfig.timelineHeight"
-			 [style.border-radius.px]="config.timelineConfig.timelineHeight" [style.opacity]="config.timelineConfig.opacity" class="audio-player-controls__timeline__display"></div>
-			<div [style.background-color]="config.timelineConfig.playheadColor" [style.height.px]="config.timelineConfig.playheadHeight"
-			 [style.width.px]="config.timelineConfig.playheadHeight" [style.marginLeft.%]="playheadPosition$ | async" #playhead class="audio-player-controls__timeline__playhead"
-			 [ngClass]="{'audio-player-controls__timeline__playhead--start': !isPlaying && (currentTimeDisplay$ | async | trackTimeDisplay) === 0 && !mousedownIsOnPlayhead}">
-			</div>
-		</div>
-	</div>
-	<div class="audio-player-controls__time-display">
-		{{ currentTimeDisplay$ | async | trackTimeDisplay }} / {{ trackLength$ | async | trackTimeDisplay }}
-	</div>
-</div>
+<p>
+  audio-player works!
+</p>
